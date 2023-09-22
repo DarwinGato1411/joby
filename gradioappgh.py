@@ -87,7 +87,7 @@ def generador_respuesta(prompt, nombrePais: str, state):
             activar_respuesta = False
     except Exception as ex:
         print(ex)
-        html=""
+        html = ""
         respuestas.append("Se ha generado un error. Pruebe a intentar nuevamente.")
 
     if activar_respuesta:
@@ -123,7 +123,8 @@ with gr.Blocks(gr.themes.Default(primary_hue="emerald", secondary_hue="emerald",
     with gr.Row():
         with gr.Column(scale=4):
             chatbot = gr.Chatbot(value=[(
-                None, "Bienvenido a JOBY de VerEmpleos. Para iniciar es necesario el ingreso de su nombre de usuario para una interacción personalizada.")]).style(height=390)
+                None,
+                "Bienvenido a JOBY de VerEmpleos. Para iniciar es necesario el ingreso de su nombre de usuario para una interacción personalizada.")])
         with gr.Column(scale=1):
             paises_radio = gr.Radio(choices=consume_api_rest.getTodosNombrePais(),
                                     label="Países", info="Selecciona para buscar por país.")
@@ -134,6 +135,6 @@ with gr.Blocks(gr.themes.Default(primary_hue="emerald", secondary_hue="emerald",
 
     submit = gr.Button("Enviar")
     submit.click(controlador_chat, inputs=[message, state, paises_radio], outputs=[
-                 chatbot, state, html, message])
+        chatbot, state, html, message])
 
-block.launch(server_name="0.0.0.0")
+block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
