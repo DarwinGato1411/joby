@@ -174,7 +174,7 @@ import uvicorn
 
 app = FastAPI()
 
-"""
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -182,9 +182,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 """
-
-
 @app.middleware("http")
 async def cors_handler(request: Request, call_next):
     response: Response = await call_next(request)
@@ -193,9 +193,9 @@ async def cors_handler(request: Request, call_next):
     response.headers["Access-Control-Allow-Methods"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
+"""
 
-
-app = gr.mount_gradio_app(app, block, "/joby")
+app = gr.mount_gradio_app(app, block, "/")
 
 if __name__ == "__main__":
     uvicorn.run("gradioappgh:app", host="0.0.0.0", port=7860, reload=True)
