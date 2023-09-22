@@ -1,3 +1,4 @@
+import os
 import consume_api_rest
 import openai
 import gradio as gr
@@ -19,9 +20,20 @@ def respuesta_generica(respuestas: list):
 
 
 def generar_html_vacante(vacante: Vacante = None) -> str:
-    return "<p><b>Puesto:</b>" + vacante.puesto + "</p>" + "<p><b>Área:</b>" + vacante.area + "</p>" + \
-        "<p><b>Descripción:</b>" + vacante.descripcionPuesto + "</p>" + \
-        "<a href='" + vacante.url + "' target='_blank'>Visualizar</a><hr/>"
+    return (
+        "<p><b>Puesto:</b>"
+        + vacante.puesto
+        + "</p>"
+        + "<p><b>Área:</b>"
+        + vacante.area
+        + "</p>"
+        + "<p><b>Descripción:</b>"
+        + vacante.descripcionPuesto
+        + "</p>"
+        + "<a href='"
+        + vacante.url
+        + "' target='_blank'>Visualizar</a><hr/>"
+    )
 
 
 def generador_respuesta(prompt, nombrePais: str, state):
@@ -38,35 +50,37 @@ def generador_respuesta(prompt, nombrePais: str, state):
                 html = ""
                 state[0] = usuario
                 respuestas.append(
-                    "Bienvenido {} al ChatBot de VerEmpleos.".format(usuario.nombre))
+                    "Bienvenido {} al ChatBot de VerEmpleos.".format(usuario.nombre)
+                )
             else:
                 usuario = None
                 activar_respuesta = False
-                respuestas.append('El usuario ingresado no esta registrado.')
-                respuestas.append(
-                    'Revise la salida para encontrar la URL de registro.')
-        elif prompt == '1':
+                respuestas.append("El usuario ingresado no esta registrado.")
+                respuestas.append("Revise la salida para encontrar la URL de registro.")
+        elif prompt == "1":
             listado = consume_api_rest.getVacantesPorPais(str(usuario.idPais))
 
             html = "<div>"
             for p in listado:
                 html = html + generar_html_vacante(vacante=p)
             html = html + "</div>"
-        elif prompt == '2':
+        elif prompt == "2":
             listado = consume_api_rest.getTodasVacantes()
 
             html = "<div>"
             for p in listado:
                 html = html + generar_html_vacante(vacante=p)
             html = html + "</div>"
-        elif prompt == '3':
+        elif prompt == "3":
             if nombrePais is None or len(nombrePais) == 0:
                 activar_respuesta = False
                 respuestas.append(
-                    "Debe seleccionar un país en el panel para poder revisar.")
+                    "Debe seleccionar un país en el panel para poder revisar."
+                )
             else:
                 listado = consume_api_rest.getVacantesDadoNombrePais(
-                    nombrePais=nombrePais)
+                    nombrePais=nombrePais
+                )
 
                 html = "<div>"
                 for p in listado:
@@ -81,7 +95,7 @@ def generador_respuesta(prompt, nombrePais: str, state):
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0.6,
-                stop=[" Human:", " AI:"]
+                stop=[" Human:", " AI:"],
             )
             respuestas.append(response.choices[0].text)
             activar_respuesta = False
@@ -115,36 +129,52 @@ def controlador_chat(input, state, nombrePais):
 
     state[1] = historial
 
-    return historial, state, html, ''
+    return historial, state, html, ""
 
 
-with gr.Blocks(gr.themes.Default(primary_hue="emerald", secondary_hue="emerald", neutral_hue="purple")) as block:
+with gr.Blocks(
+    gr.themes.Default(
+        primary_hue="emerald", secondary_hue="emerald", neutral_hue="purple"
+    )
+) as block:
     gr.Markdown("""<h1><center>JOBY CHAT</center></h1>""")
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(value=[(
-                None,
-                "Bienvenido a JOBY de VerEmpleos. Para iniciar es necesario el ingreso de su nombre de usuario para una interacción personalizada.")])
+            chatbot = gr.Chatbot(
+                value=[
+                    (
+                        None,
+                        "Bienvenido a JOBY de VerEmpleos. Para iniciar es necesario el ingreso de su nombre de usuario para una interacción personalizada.",
+                    )
+                ]
+            )
         with gr.Column(scale=1):
-            paises_radio = gr.Radio(choices=consume_api_rest.getTodosNombrePais(),
-                                    label="Países", info="Selecciona para buscar por país.")
+            paises_radio = gr.Radio(
+                choices=consume_api_rest.getTodosNombrePais(),
+                label="Países",
+                info="Selecciona para buscar por país.",
+            )
     message = gr.Textbox(label="Ingrese su consulta aquí.")
     state = gr.State([])
-    with gr.Accordion('Información Adicional:'):
+    with gr.Accordion("Información Adicional:"):
         html = gr.HTML()
 
     submit = gr.Button("Enviar")
-    submit.click(controlador_chat, inputs=[message, state, paises_radio], outputs=[
-        chatbot, state, html, message])
+    submit.click(
+        controlador_chat,
+        inputs=[message, state, paises_radio],
+        outputs=[chatbot, state, html, message],
+    )
 
 # block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 app = FastAPI()
 
+"""
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -152,6 +182,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+"""
+
+
+@app.middleware("http")
+async def cors_handler(request: Request, call_next):
+    response: Response = await call_next(request)
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
 
 app = gr.mount_gradio_app(app, block, "/")
 
