@@ -195,7 +195,7 @@ async def cors_handler(request: Request, call_next):
     return response
 
 
-app = gr.mount_gradio_app(app, block, "/")
+app = gr.mount_gradio_app(app, block, "/joby")
 
 if __name__ == "__main__":
     uvicorn.run("gradioappgh:app", host="0.0.0.0", port=7860, reload=True)
