@@ -160,4 +160,4 @@ app.add_middleware(
 app = gr.mount_gradio_app(app, block, "/")
 
 if __name__ == "__main__":
-    uvicorn.run("gradioappgh:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("gradioappgh:app", host="0.0.0.0", port=7860, reload=True)
