@@ -137,4 +137,27 @@ with gr.Blocks(gr.themes.Default(primary_hue="emerald", secondary_hue="emerald",
     submit.click(controlador_chat, inputs=[message, state, paises_radio], outputs=[
         chatbot, state, html, message])
 
-block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
+# block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app = gr.mount_gradio_app(app, block, "/")
+
+if __name__ == "__main__":
+    uvicorn.run("gradioappgh:app", host="0.0.0.0", port=8000, reload=True)
