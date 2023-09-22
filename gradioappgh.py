@@ -146,7 +146,8 @@ import uvicorn
 app = FastAPI()
 
 origins = [
-    "http://localhost:8080",
+    "http://localhost:8000",
+    "https://consultoriointegradodecardiologia.com/"
 ]
 
 app.add_middleware(
