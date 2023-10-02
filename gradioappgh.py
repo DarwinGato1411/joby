@@ -1,10 +1,7 @@
-import os
 import consume_api_rest
 import openai
 import gradio as gr
-from gradio import Interface
 
-from consume_api_rest import Usuario
 from consume_api_rest import Vacante
 
 openai.api_key = ""
@@ -149,12 +146,12 @@ with gr.Blocks(
                 ]
             )
         with gr.Column(scale=1):
-            paises_radio = gr.Radio(
+            paises_radio = gr.Dropdown(
                 choices=consume_api_rest.getTodosNombrePais(),
                 label="Países",
                 info="Selecciona para buscar por país.",
             )
-    message = gr.Textbox(label="Ingrese su consulta aquí.")
+    message = gr.Textbox(label="Ingrese su usuario aquí.")
     state = gr.State([])
     with gr.Accordion("Información Adicional:"):
         html = gr.HTML()
@@ -168,7 +165,7 @@ with gr.Blocks(
 
 # block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
