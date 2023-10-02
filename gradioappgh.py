@@ -145,13 +145,15 @@ with gr.Blocks(
                     )
                 ]
             )
+        with gr.Column(scale=4):
+            message = gr.Textbox(label="Ingrese su usuario aquí.")
         with gr.Column(scale=1):
             paises_radio = gr.Dropdown(
                 choices=consume_api_rest.getTodosNombrePais(),
                 label="Países",
                 info="Selecciona para buscar por país.",
-            )
-    message = gr.Textbox(label="Ingrese su usuario aquí.")
+                value="Ecuador"
+            )    
     state = gr.State([])
     with gr.Accordion("Información Adicional:"):
         html = gr.HTML()
