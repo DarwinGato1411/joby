@@ -165,8 +165,9 @@ with gr.Blocks(
         outputs=[chatbot, state, html, message],
     )
 
-# block.launch(server_name="0.0.0.0", show_api=False, show_tips=False)
+block.launch(server_name="0.0.0.0", show_api=False, show_tips=False, ssl_verify=False)
 
+'''
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -198,3 +199,4 @@ app = gr.mount_gradio_app(app, block, "/")
 
 if __name__ == "__main__":
     uvicorn.run("gradioappgh:app", host="0.0.0.0", port=7860, reload=True)
+'''
